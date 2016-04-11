@@ -31,13 +31,11 @@ struct win32_offscreen_buffer
 	int height;
 	int pitch;
 };
-
 struct win32_window_dimensions
 {
 	int width;
 	int height;
 };
-
 struct win32_sound_output
 {
 	const int samplesPerSecond	{ 48000 };
@@ -295,6 +293,10 @@ internal LRESULT CALLBACK Win32MainWindowCallback(HWND window, UINT msg, WPARAM 
 
 int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode) 
 {
+	LARGE_INTEGER perfCounterFrequencyResult;
+	QueryPerformanceFrequency(&perfCounterFrequencyResult);
+	int64 perfCounterFrequency = perfCounterFrequencyResult.QuadPart;
+
 	Win32LoadXInput();
 
 	WNDCLASSA windowClass {};
@@ -319,6 +321,10 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 			Win32InitDSound(window, soundOutput.samplesPerSecond, soundOutput.secondaryBufferSize);
 			Win32FillSoundBuffer(soundOutput, 0, soundOutput.secondaryBufferSize);
 			globalSecondaryBuffer->Play(0, 0, DSBPLAY_LOOPING);
+
+			LARGE_INTEGER beginCounter;
+			QueryPerformanceCounter(&beginCounter);
+			int64 beginCycleCount { __rdtsc() };
 
 			globalRunning = true;
 			while (globalRunning) {
@@ -361,6 +367,8 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				XInputSetState(0, &vibration);
 
 				RenderWeirdGradient(globalBackBuffer, xOffset, yOffset);
+				++xOffset;
+				yOffset += 2;
 
 				DWORD playCursor, writeCursor;
 				if (SUCCEEDED(globalSecondaryBuffer->GetCurrentPosition(&playCursor, &writeCursor))) {
@@ -372,8 +380,19 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				win32_window_dimensions dimensions = Win32GetWindowDimensions(window);
 				Win32DisplayBufferInWindow(globalBackBuffer, deviceContext, dimensions.width, dimensions.height);
 
-				++xOffset;
-				yOffset += 2;
+				int64 endCycleCount = __rdtsc();
+
+				LARGE_INTEGER endCounter;
+				QueryPerformanceCounter(&endCounter);
+
+				int64 cyclesElapsed		{ endCycleCount - beginCycleCount };
+				int64 counterElapsed	{ endCounter.QuadPart - beginCounter.QuadPart };
+				real32 msPerFrame		{ (counterElapsed*1000.0f) / real32(perfCounterFrequency) };
+				real32 fps				{ real32(perfCounterFrequency / counterElapsed) };
+				real32 mcpf				{ real32(cyclesElapsed / (1000.0f * 1000.0f)) };
+
+				beginCounter = endCounter;
+				beginCycleCount = endCycleCount;
 			}
 		}
 	}
