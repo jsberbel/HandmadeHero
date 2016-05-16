@@ -1,8 +1,18 @@
+/* ========================================================================
+   File: win32_handmadehero.cpp
+   Revision: 0.1
+   Creator: Jordi Serrano Berbel
+   Notice: (C) Copyright 2016 by Jordi Serrano Berbel. All Rights Reserved.
+   ======================================================================== */
+
 #include <windows.h>
 #include <XInput.h>
 #include <dsound.h>
 #include <cstdint>
 #include <cmath>
+
+#pragma comment(lib, "user32.lib")
+#pragma comment(lib, "gdi32.lib")
 
 #define PI32 3.141592265359f
 
@@ -291,7 +301,7 @@ internal LRESULT CALLBACK Win32MainWindowCallback(HWND window, UINT msg, WPARAM 
 	return result;
 }
 
-int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode) 
+int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLine, int showCode)
 {
 	LARGE_INTEGER perfCounterFrequencyResult;
 	QueryPerformanceFrequency(&perfCounterFrequencyResult);
@@ -324,7 +334,7 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 
 			LARGE_INTEGER beginCounter;
 			QueryPerformanceCounter(&beginCounter);
-			int64 beginCycleCount { __rdtsc() };
+			uint64 beginCycleCount { __rdtsc() };
 
 			globalRunning = true;
 			while (globalRunning) {
@@ -380,16 +390,16 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				win32_window_dimensions dimensions = Win32GetWindowDimensions(window);
 				Win32DisplayBufferInWindow(globalBackBuffer, deviceContext, dimensions.width, dimensions.height);
 
-				int64 endCycleCount = __rdtsc();
+				uint64 endCycleCount = __rdtsc();
 
 				LARGE_INTEGER endCounter;
 				QueryPerformanceCounter(&endCounter);
 
-				int64 cyclesElapsed		{ endCycleCount - beginCycleCount };
+				uint64 cyclesElapsed	{ endCycleCount - beginCycleCount };
 				int64 counterElapsed	{ endCounter.QuadPart - beginCounter.QuadPart };
-				real32 msPerFrame		{ (counterElapsed*1000.0f) / real32(perfCounterFrequency) };
-				real32 fps				{ real32(perfCounterFrequency / counterElapsed) };
-				real32 mcpf				{ real32(cyclesElapsed / (1000.0f * 1000.0f)) };
+				real32 msPerFrame		{ (real32(counterElapsed)*1000.0f) / real32(perfCounterFrequency) };
+				real32 fps				{ real32(perfCounterFrequency) / real32(counterElapsed) };
+				real32 mcpf				{ real32(cyclesElapsed) / (1000.0f * 1000.0f) };
 
 				beginCounter = endCounter;
 				beginCycleCount = endCycleCount;

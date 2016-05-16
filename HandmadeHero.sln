@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HandmadeHero", "HandmadeHero\HandmadeHero.vcxproj", "{69CCFD9F-E3A7-4578-B5FF-88B2E4E1EEA0}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "HandmadeHero", "src\HandmadeHero.vcxproj", "{69CCFD9F-E3A7-4578-B5FF-88B2E4E1EEA0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
