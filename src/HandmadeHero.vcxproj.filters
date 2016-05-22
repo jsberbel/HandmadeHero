@@ -18,6 +18,9 @@
     <ClCompile Include="win32_handmadehero.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="handmade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="handmade.h">

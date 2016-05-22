@@ -16,38 +16,20 @@
 
 #define PI32 3.141592265359f
 
-#define internal static
-#define local_persist static
-#define global_var static
+#include "handmade.h"
 
-typedef int8_t int8; //char
-typedef int16_t int16; //short
-typedef int32_t int32; //int
-typedef int64_t int64; //long long
-
-typedef uint8_t uint8; //uchar
-typedef uint16_t uint16; //ushort
-typedef uint32_t uint32; //uint
-typedef uint64_t uint64; //ulong long
-
-typedef float real32;
-typedef double real64;
-
-struct win32_offscreen_buffer
-{
+struct win32_offscreen_buffer {
 	BITMAPINFO info;
 	void *memory;
 	int width;
 	int height;
 	int pitch;
 };
-struct win32_window_dimensions
-{
+struct win32_window_dimensions {
 	int width;
 	int height;
 };
-struct win32_sound_output
-{
+struct win32_sound_output {
 	const int samplesPerSecond	{ 48000 };
 	const int toneHz			{ 256 };
 	uint32 runningSampleIndex	{ 0 };;
@@ -182,25 +164,7 @@ internal win32_window_dimensions& Win32GetWindowDimensions(const HWND &window) {
 	return result;
 }
 
-internal void RenderWeirdGradient(win32_offscreen_buffer &buffer, int blueOffset, int greenOffset)
-{
-	const int width { buffer.width };
-	const int height { buffer.height };
-	
-	uint8 *row { static_cast<uint8*>(buffer.memory) };
-	for (int y {0}; y < height; ++y) {
-		uint32 *pixel { reinterpret_cast<uint32*>(row) };
-		for (int x {0}; x < width; ++x) {
-			// Pixel (32 bits)
-			// Memory:		BB GG RR xx
-			// Register:	xx RR GG BB
-			uint8 blue	{ uint8(x + blueOffset) };
-			uint8 green { uint8(y + greenOffset) };
-			*pixel++ = (green << 8) | blue;
-		}
-		row += buffer.pitch;
-	}
-}
+
 
 internal void Win32ResizeDIBSection(win32_offscreen_buffer &buffer, int width, int height)
 {
@@ -376,9 +340,12 @@ int CALLBACK WinMain(HINSTANCE instance, HINSTANCE prevInstance, LPSTR commandLi
 				vibration.wRightMotorSpeed = 60000;
 				XInputSetState(0, &vibration);
 
-				RenderWeirdGradient(globalBackBuffer, xOffset, yOffset);
-				++xOffset;
-				yOffset += 2;
+				game_offscreen_buffer buffer = {};
+				buffer.memory = globalBackBuffer.memory;
+				buffer.width = globalBackBuffer.width;
+				buffer.height = globalBackBuffer.height;
+				buffer.pitch = globalBackBuffer.pitch;
+				GameUpdateAndRender(buffer);
 
 				DWORD playCursor, writeCursor;
 				if (SUCCEEDED(globalSecondaryBuffer->GetCurrentPosition(&playCursor, &writeCursor))) {

@@ -158,6 +158,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="handmade.cpp" />
     <ClCompile Include="win32_handmadehero.cpp" />
   </ItemGroup>
   <ItemGroup>
