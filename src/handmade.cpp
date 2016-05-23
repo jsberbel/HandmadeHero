@@ -6,6 +6,23 @@ Notice: (C) Copyright 2016 by Jordi Serrano Berbel. All Rights Reserved.
 ======================================================================== */
 
 #include "handmade.h"
+#include <cmath>
+
+void GameOutputSound(game_sound_output_buffer &soundBuffer) {
+	local_persist real32 tSine;
+	const int16 toneVolume = 3000;
+	const int toneHz = 256;
+	const int wavePeriod = soundBuffer.samplesPerSecond / toneHz;
+
+	int16 *sampleOut = soundBuffer.samples;
+	for (int sampleIndex{ 0 }; sampleIndex < soundBuffer.sampleCount; ++sampleIndex) {
+		real32 sineValue{ sinf(tSine) };
+		int16 sampleValue{ int16(sineValue * toneVolume) };
+		*sampleOut++ = sampleValue;
+		*sampleOut++ = sampleValue;
+		tSine = 2.0f*PI32*1.0f/real32(wavePeriod);
+	}
+}
 
 internal void RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset, int greenOffset) {
 	const int width{ buffer.width };
@@ -26,7 +43,8 @@ internal void RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset,
 	}
 }
 
-void GameUpdateAndRender(game_offscreen_buffer &buffer) {
+void GameUpdateAndRender(game_sound_output_buffer &soundBuffer, game_offscreen_buffer &offscreenBuffer) {
+	GameOutputSound(soundBuffer);
 	int blueOffset = 0, greenOffset = 0;
-	RenderWeirdGradient(buffer, blueOffset, greenOffset);
+	RenderWeirdGradient(offscreenBuffer, blueOffset, greenOffset);
 }

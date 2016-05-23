@@ -8,9 +8,12 @@
    ======================================================================== */
 
 #include <cstdint>
+
 #define internal static
 #define local_persist static
 #define global_var static
+
+#define PI32 3.141592265359f
 
 typedef int8_t int8; //char
 typedef int16_t int16; //short
@@ -25,6 +28,12 @@ typedef uint64_t uint64; //ulong long
 typedef float real32;
 typedef double real64;
 
+struct game_sound_output_buffer {
+	int16 *samples;
+	int samplesPerSecond;
+	int sampleCount;
+};
+
 struct game_offscreen_buffer {
 	void *memory;
 	int width;
@@ -32,7 +41,7 @@ struct game_offscreen_buffer {
 	int pitch;
 };
 
-void GameUpdateAndRender(game_offscreen_buffer &buffer);
+void GameUpdateAndRender(game_sound_output_buffer &soundBuffer, game_offscreen_buffer &offscreenBuffer);
 
 #define HANDMADE_H
 #endif
