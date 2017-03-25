@@ -8,12 +8,12 @@
 #include "handmade.hh"
 #include <cmath>
 
-void GameOutputSound(game_sound_output_buffer &soundBuffer)
+internal void
+GameOutputSound(game_sound_output_buffer &soundBuffer, int toneHz)
 {
 	local_persist real32 tSine;
-	const int16 toneVolume = 3000;
-	const int toneHz = 256;
-	const int wavePeriod = soundBuffer.samplesPerSecond / toneHz;
+	const int16 toneVolume	{ 3000 };
+	const int wavePeriod	{ soundBuffer.samplesPerSecond / toneHz };
 
 	int16 *&sampleOut = soundBuffer.samples;
 	for (int sampleIndex{ 0 };
@@ -29,16 +29,17 @@ void GameOutputSound(game_sound_output_buffer &soundBuffer)
 	}
 }
 
-internal void RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset, int greenOffset)
+internal void
+RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset, int greenOffset)
 {
 	//const int &width{ buffer.width };
 	//const int &height{ buffer.height };
 
 	uint8 *row{ static_cast<uint8*>(buffer.memory) };
-	for (int y{ 0 }; y < buffer.width; ++y)
+	for (int y{ 0 }; y < buffer.height; ++y)
 	{
 		uint32 *pixel{ reinterpret_cast<uint32*>(row) };
-		for (int x{ 0 }; x < buffer.height; ++x)
+		for (int x{ 0 }; x < buffer.width; ++x)
 		{
 			// Pixel (32 bits)
 			// Memory:		BB GG RR xx
@@ -52,9 +53,60 @@ internal void RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset,
 	}
 }
 
-void GameUpdateAndRender(game_sound_output_buffer &soundBuffer, game_offscreen_buffer &offscreenBuffer)
+internal game_memory *
+GameStartUp(void)
 {
-	GameOutputSound(soundBuffer);
-	int blueOffset = 0, greenOffset = 0;
-	RenderWeirdGradient(offscreenBuffer, blueOffset, greenOffset);
+	game_memory *memory = new game_memory;
+	if (memory)
+	{
+		/*memory->toneHz = 256;
+		memory->blueOffset = 0;
+		memory->greenOffset = 0;*/
+	}
+	return memory;
+}
+
+internal void
+GameShutDown(game_memory *memory)
+{
+	delete memory;
+}
+
+internal void
+GameUpdateAndRender(game_memory &memory,
+					game_input &input,
+					game_offscreen_buffer &offscreenBuffer,
+					game_sound_output_buffer &soundBuffer)
+{
+	Assert(sizeof(game_state) <= memory.permanentStorageSize);
+
+	game_state *gameState = (game_state*)memory.permanentStorage;
+	if (!memory.isInitialized)
+	{
+		gameState->toneHz = 256;
+		gameState->blueOffset = 0;
+		gameState->greenOffset = 0;
+		memory.isInitialized = true;
+	}
+
+	game_controller_input &input0 = input.controllers[0];
+
+	if (input0.isAnalog)
+	{
+		// use analog movement tuning
+		gameState->blueOffset += (int)4.f*(input0.endY);
+		gameState->toneHz = 256 + (int)(128.f*(input0.endY));
+	}
+	else
+	{
+		// use digital movement tuning
+	}
+
+	if (input0.down.endedDown)
+	{
+		gameState->greenOffset += 1;
+	}
+
+	GameOutputSound(soundBuffer, gameState->toneHz);
+	RenderWeirdGradient(offscreenBuffer, gameState->blueOffset, gameState->greenOffset);
 }

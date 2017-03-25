@@ -1,3 +1,7 @@
-﻿  win32_handmadehero.cc
+﻿  win32_handmade.cc
+d:\documents\[jsb]\repos\handmadehero\src\handmade.cc(97): warning C4244: '+=': conversion from 'real32' to 'int32', possible loss of data
+d:\documents\[jsb]\repos\handmadehero\src\win32_handmade.cc(373): warning C4244: 'argument': conversion from 'uint64' to 'SIZE_T', possible loss of data
+d:\documents\[jsb]\repos\handmadehero\src\win32_handmade.cc(428): warning C4804: '/': unsafe use of type 'bool' in operation
+d:\documents\[jsb]\repos\handmadehero\src\win32_handmade.cc(431): warning C4804: '/': unsafe use of type 'bool' in operation
   HandmadeHero.vcxproj -> D:\Documents\[JSB]\Repos\HandmadeHero\\bin\Win32_Debug\HandmadeHero.exe
   HandmadeHero.vcxproj -> D:\Documents\[JSB]\Repos\HandmadeHero\\bin\Win32_Debug\HandmadeHero.pdb (Partial PDB)

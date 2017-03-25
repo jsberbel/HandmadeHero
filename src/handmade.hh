@@ -1,5 +1,4 @@
-#ifndef HANDMADE_H
-#define HANDMADE_H
+#pragma once
 
 /* ========================================================================
    File: handmade.h
@@ -26,24 +25,90 @@ typedef uint16_t uint16; // ushort
 typedef uint32_t uint32; // uint
 typedef uint64_t uint64; // ulong long
 
+typedef bool	 bool32;
 typedef float	 real32; // float
 typedef double	 real64; // double
 
 struct game_sound_output_buffer
 {
-	int samplesPerSecond;
-	int sampleCount;
+	int32 samplesPerSecond;
+	int32 sampleCount;
 	int16 *samples;
 };
 
 struct game_offscreen_buffer // Pixels are always 32-bit wide, Memory Order BB GG RR XX
 {
 	void *memory;
-	int width;
-	int height;
-	int pitch;
+	int32 width;
+	int32 height;
+	int32 pitch;
 };
 
-void GameUpdateAndRender(game_sound_output_buffer &soundBuffer, game_offscreen_buffer &offscreenBuffer);
+struct game_button_state
+{
+	int32 halfTransitionCount;
+	bool32 endedDown;
+};
 
-#endif
+struct game_controller_input
+{
+	bool32 isAnalog;
+
+	real32 startX;
+	real32 startY;
+
+	real32 minX;
+	real32 minY;
+
+	real32 maxX;
+	real32 maxY;
+
+	real32 endX;
+	real32 endY;
+
+	union
+	{
+		game_button_state buttons[6];
+		struct
+		{
+			game_button_state up;
+			game_button_state down;
+			game_button_state left;
+			game_button_state right;
+			game_button_state leftShoulder;
+			game_button_state rightShoulder;
+		};
+	};
+	
+};
+
+struct game_clocks
+{
+	real32 secondsElapsed;
+};
+
+struct game_input
+{
+	game_controller_input controllers[4];
+};
+
+struct game_memory
+{
+	bool32 isInitialized;
+	uint64 permanentStorageSize;
+	uint64 transientStorageSize;
+	void *permanentStorage;
+	void *transientStorage;
+};
+
+void GameUpdateAndRender(game_memory &memory,
+						 game_input &input,
+						 game_offscreen_buffer &offscreenBuffer,
+						 game_sound_output_buffer &soundBuffer);
+
+struct game_state
+{
+	int32 toneHz;
+	int32 blueOffset;
+	int32 greenOffset;
+};
