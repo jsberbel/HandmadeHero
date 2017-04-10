@@ -1,7 +1,38 @@
-﻿  win32_handmade.cc
-d:\documents\[jsb]\repos\handmadehero\src\handmade.cc(97): warning C4244: '+=': conversion from 'real32' to 'int32', possible loss of data
-d:\documents\[jsb]\repos\handmadehero\src\win32_handmade.cc(373): warning C4244: 'argument': conversion from 'uint64' to 'SIZE_T', possible loss of data
-d:\documents\[jsb]\repos\handmadehero\src\win32_handmade.cc(428): warning C4804: '/': unsafe use of type 'bool' in operation
-d:\documents\[jsb]\repos\handmadehero\src\win32_handmade.cc(431): warning C4804: '/': unsafe use of type 'bool' in operation
-  HandmadeHero.vcxproj -> D:\Documents\[JSB]\Repos\HandmadeHero\\bin\Win32_Debug\HandmadeHero.exe
-  HandmadeHero.vcxproj -> D:\Documents\[JSB]\Repos\HandmadeHero\\bin\Win32_Debug\HandmadeHero.pdb (Partial PDB)
+﻿cl : Command line warning D9007: '/Gm' requires '/Zi or /ZI'; option ignored
+  win32_handmade.cc
+d:\documents\_jsb\repos\handmadehero\src\handmade.hh(127): warning C4201: nonstandard extension used: nameless struct/union
+d:\documents\_jsb\repos\handmadehero\src\handmade.cc(81): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(59): warning C4100: 'pState': unreferenced formal parameter
+win32_handmade.cc(59): warning C4100: 'dwUserIndex': unreferenced formal parameter
+win32_handmade.cc(66): warning C4100: 'pVibration': unreferenced formal parameter
+win32_handmade.cc(66): warning C4100: 'dwUserIndex': unreferenced formal parameter
+win32_handmade.cc(76): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(92): warning C4244: 'argument': conversion from 'LONGLONG' to 'SIZE_T', possible loss of data
+win32_handmade.cc(128): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(159): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(573): warning C4804: '/': unsafe use of type 'bool' in operation
+win32_handmade.cc(576): warning C4804: '/': unsafe use of type 'bool' in operation
+win32_handmade.cc(399): warning C4100: 'nShowCmd': unreferenced formal parameter
+win32_handmade.cc(398): warning C4100: 'lpCmdLine': unreferenced formal parameter
+win32_handmade.cc(397): warning C4100: 'hPrevInstance': unreferenced formal parameter
+win32_handmade.cc(430): warning C4189: 'xOffset': local variable is initialized but not referenced
+win32_handmade.cc(430): warning C4189: 'yOffset': local variable is initialized but not referenced
+win32_handmade.cc(671): warning C4189: 'msPerFrame': local variable is initialized but not referenced
+win32_handmade.cc(672): warning C4189: 'fps': local variable is initialized but not referenced
+win32_handmade.cc(673): warning C4189: 'mcpf': local variable is initialized but not referenced
+win32_handmade.cc(604): warning C4189: 'xButton': local variable is initialized but not referenced
+win32_handmade.cc(564): warning C4189: 'up': local variable is initialized but not referenced
+win32_handmade.cc(566): warning C4189: 'left': local variable is initialized but not referenced
+win32_handmade.cc(603): warning C4189: 'bButton': local variable is initialized but not referenced
+win32_handmade.cc(600): warning C4189: 'leftShoulder': local variable is initialized but not referenced
+win32_handmade.cc(601): warning C4189: 'rightShoulder': local variable is initialized but not referenced
+win32_handmade.cc(598): warning C4189: 'start': local variable is initialized but not referenced
+win32_handmade.cc(599): warning C4189: 'back': local variable is initialized but not referenced
+win32_handmade.cc(565): warning C4189: 'down': local variable is initialized but not referenced
+win32_handmade.cc(567): warning C4189: 'right': local variable is initialized but not referenced
+win32_handmade.cc(602): warning C4189: 'aButton': local variable is initialized but not referenced
+win32_handmade.cc(605): warning C4189: 'yButton': local variable is initialized but not referenced
+d:\documents\_jsb\repos\handmadehero\src\handmade.cc(58): warning C4505: 'GameStartUp': unreferenced local function has been removed
+d:\documents\_jsb\repos\handmadehero\src\handmade.cc(71): warning C4505: 'GameShutDown': unreferenced local function has been removed
+  HandmadeHero.vcxproj -> D:\Documents\_JSB\Repos\HandmadeHero\\bin\Win32_Debug\HandmadeHero.exe
+  HandmadeHero.vcxproj -> D:\Documents\_JSB\Repos\HandmadeHero\\bin\Win32_Debug\HandmadeHero.pdb (Partial PDB)

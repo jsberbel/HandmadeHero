@@ -23,10 +23,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="win32_handmade.h">
+    <ClInclude Include="handmade.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="handmade.hh">
+    <ClInclude Include="win32_handmade.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

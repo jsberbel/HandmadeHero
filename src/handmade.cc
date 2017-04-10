@@ -1,12 +1,13 @@
-/* ========================================================================
-   File: handmade.cpp
-   Revision: 1.0
-   Creator: Jordi Serrano Berbel
-   Notice: Copyright © 2017 by Jordi Serrano Berbel. All Rights Reserved.
-   ======================================================================== */
+/*
+* ========================================================================
+* File: handmade.cc
+* Revision: 1.0
+* Creator: Jordi Serrano Berbel
+* Notice: Copyright © 2017 by Jordi Serrano Berbel. All Rights Reserved.
+* =======================================================================
+*/
 
 #include "handmade.hh"
-#include <cmath>
 
 internal void
 GameOutputSound(game_sound_output_buffer &soundBuffer, int toneHz)
@@ -21,11 +22,11 @@ GameOutputSound(game_sound_output_buffer &soundBuffer, int toneHz)
 		 ++sampleIndex)
 	{
 		real32 sineValue	{ sinf(tSine) };
-		int16 sampleValue	{ static_cast<int16>(sineValue * toneVolume) };
+		int16 sampleValue	{ int16(sineValue * toneVolume) };
 		*sampleOut++ = sampleValue;
 		*sampleOut++ = sampleValue;
 
-		tSine = 2.0f*PI32*1.0f/real32(wavePeriod);
+		tSine += 2.0f*PI32*1.0f/real32(wavePeriod);
 	}
 }
 
@@ -44,8 +45,8 @@ RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset, int greenOffs
 			// Pixel (32 bits)
 			// Memory:		BB GG RR xx
 			// Register:	xx RR GG BB
-			uint8 blue	{ static_cast<uint8>(x + blueOffset) };
-			uint8 green	{ static_cast<uint8>(y + greenOffset) };
+			uint8 blue	{ uint8(x + blueOffset) };
+			uint8 green	{ uint8(y + greenOffset) };
 
 			*pixel++ = (green << 8) | blue;
 		}
@@ -83,6 +84,15 @@ GameUpdateAndRender(game_memory &memory,
 	game_state *gameState = (game_state*)memory.permanentStorage;
 	if (!memory.isInitialized)
 	{
+		const char *filename = __FILE__;
+
+		DEBUG::read_file_result file = DEBUG::PlatformReadEntireFile(filename);
+		if (file.data)
+		{
+			DEBUG::PlatformWriteEntireFile("test.out", file.dataSize, file.data);
+			DEBUG::PlatformFreeFileMemory(file.data);
+		}
+
 		gameState->toneHz = 256;
 		gameState->blueOffset = 0;
 		gameState->greenOffset = 0;
@@ -93,20 +103,23 @@ GameUpdateAndRender(game_memory &memory,
 
 	if (input0.isAnalog)
 	{
-		// use analog movement tuning
-		gameState->blueOffset += (int)4.f*(input0.endY);
-		gameState->toneHz = 256 + (int)(128.f*(input0.endY));
+		// NOTE: Use analog movement tuning
+		gameState->blueOffset += int(4.f*input0.endX);
+		gameState->toneHz = 256 + int(128.f*input0.endY);
 	}
 	else
 	{
-		// use digital movement tuning
+		// NOTE: Use digital movement tuning
 	}
 
+	// Input.AButtonEndedDown;
+	// Input.AButtonHalfTransitionCount;
 	if (input0.down.endedDown)
 	{
 		gameState->greenOffset += 1;
 	}
 
+	// TODO: Allow sample offsets here for more robust platform options
 	GameOutputSound(soundBuffer, gameState->toneHz);
 	RenderWeirdGradient(offscreenBuffer, gameState->blueOffset, gameState->greenOffset);
 }
