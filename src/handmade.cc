@@ -1,46 +1,46 @@
 /*
-* ========================================================================
-* File: handmade.cc
-* Revision: 1.0
-* Creator: Jordi Serrano Berbel
-* Notice: Copyright © 2017 by Jordi Serrano Berbel. All Rights Reserved.
-* =======================================================================
-*/
+ * ========================================================================
+ * File: handmade.cc
+ * Revision: 1.0
+ * Creator: Jordi Serrano Berbel
+ * Notice: Copyright © 2017 by Jordi Serrano Berbel. All Rights Reserved.
+ * =======================================================================
+ */
 
 #include "handmade.hh"
 
 internal void
-GameOutputSound(game_sound_output_buffer &soundBuffer, int toneHz)
+GameOutputSound(GameSoundOutputBuffer *soundBuffer, const int toneHz)
 {
 	local_persist real32 tSine;
 	const int16 toneVolume	{ 3000 };
-	const int wavePeriod	{ soundBuffer.samplesPerSecond / toneHz };
+	const int wavePeriod	{ soundBuffer->samplesPerSecond / toneHz };
 
-	int16 *&sampleOut = soundBuffer.samples;
+	int16 *&sampleOut = soundBuffer->samples;
 	for (int sampleIndex{ 0 };
-		 sampleIndex < soundBuffer.sampleCount;
+		 sampleIndex < soundBuffer->sampleCount;
 		 ++sampleIndex)
 	{
-		real32 sineValue	{ sinf(tSine) };
-		int16 sampleValue	{ int16(sineValue * toneVolume) };
+		const real32 sineValue	{ sinf(tSine) };
+		const int16 sampleValue	{ int16(sineValue * toneVolume) };
 		*sampleOut++ = sampleValue;
 		*sampleOut++ = sampleValue;
 
-		tSine += 2.0f*PI32*1.0f/real32(wavePeriod);
+		tSine += 2.0f*PI32*1.0f / real32(wavePeriod);
 	}
 }
 
 internal void
-RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset, int greenOffset)
+RenderWeirdGradient(GameOffscreenBuffer *buffer, const int blueOffset, const int greenOffset)
 {
 	//const int &width{ buffer.width };
 	//const int &height{ buffer.height };
 
-	uint8 *row{ static_cast<uint8*>(buffer.memory) };
-	for (int y{ 0 }; y < buffer.height; ++y)
+	uint8 *row{ static_cast<uint8*>(buffer->memory) };
+	for (int y{ 0 }; y < buffer->height; ++y)
 	{
 		uint32 *pixel{ reinterpret_cast<uint32*>(row) };
-		for (int x{ 0 }; x < buffer.width; ++x)
+		for (int x{ 0 }; x < buffer->width; ++x)
 		{
 			// Pixel (32 bits)
 			// Memory:		BB GG RR xx
@@ -50,14 +50,14 @@ RenderWeirdGradient(game_offscreen_buffer &buffer, int blueOffset, int greenOffs
 
 			*pixel++ = (green << 8) | blue;
 		}
-		row += buffer.pitch;
+		row += buffer->pitch;
 	}
 }
 
-internal game_memory *
+internal GameMemory*
 GameStartUp(void)
 {
-	game_memory *memory = new game_memory;
+	GameMemory *memory = new GameMemory;
 	if (memory)
 	{
 		/*memory->toneHz = 256;
@@ -68,55 +68,67 @@ GameStartUp(void)
 }
 
 internal void
-GameShutDown(game_memory *memory)
+GameShutDown(GameMemory *memory)
 {
 	delete memory;
 }
 
-internal void
-GameUpdateAndRender(game_memory &memory,
-					game_input &input,
-					game_offscreen_buffer &offscreenBuffer,
-					game_sound_output_buffer &soundBuffer)
+void GameUpdateAndRender(GameMemory *memory, 
+						 GameInput *input,
+						 GameOffscreenBuffer *offscreenBuffer,
+						 GameSoundOutputBuffer *soundBuffer)
 {
-	Assert(sizeof(game_state) <= memory.permanentStorageSize);
+	ASSERT(sizeof(GameState) <= memory->permanentStorageSize);
 
-	game_state *gameState = (game_state*)memory.permanentStorage;
-	if (!memory.isInitialized)
+	GameState *gameState = (GameState*)memory->permanentStorage;
+	if (!memory->isInitialized)
 	{
 		const char *filename = __FILE__;
 
-		DEBUG::read_file_result file = DEBUG::PlatformReadEntireFile(filename);
+		const Debug::ReadFileResult file = Debug::PlatformReadEntireFile(filename);
 		if (file.data)
 		{
-			DEBUG::PlatformWriteEntireFile("test.out", file.dataSize, file.data);
-			DEBUG::PlatformFreeFileMemory(file.data);
+			Debug::PlatformWriteEntireFile("test.out", file.dataSize, file.data);
+			Debug::PlatformFreeFileMemory(file.data);
 		}
 
 		gameState->toneHz = 256;
 		gameState->blueOffset = 0;
 		gameState->greenOffset = 0;
-		memory.isInitialized = true;
+		memory->isInitialized = true;
 	}
 
-	game_controller_input &input0 = input.controllers[0];
+	for (int controller_index = 0;
+		 controller_index < ARRAY_COUNT(input->controllers);
+		 ++controller_index)
+	{
+		GameControllerInput *controller = GetController(input, controller_index);
+		if (controller->isAnalog)
+		{
+			// NOTE: Use analog movement tuning
+			gameState->blueOffset += int(4.f*controller->stickAverageX);
+			gameState->toneHz = 256 + int(128.f*controller->stickAverageY);
+		}
+		else
+		{
+			// NOTE: Use digital movement tuning
+			if (controller->actionLeft.endedDown)
+			{
+				gameState->blueOffset -= 1;
+			}
 
-	if (input0.isAnalog)
-	{
-		// NOTE: Use analog movement tuning
-		gameState->blueOffset += int(4.f*input0.endX);
-		gameState->toneHz = 256 + int(128.f*input0.endY);
-	}
-	else
-	{
-		// NOTE: Use digital movement tuning
-	}
+			if (controller->actionRight.endedDown)
+			{
+				gameState->blueOffset += 1;
+			}
+		}
 
-	// Input.AButtonEndedDown;
-	// Input.AButtonHalfTransitionCount;
-	if (input0.down.endedDown)
-	{
-		gameState->greenOffset += 1;
+		// Input.AButtonEndedDown;
+		// Input.AButtonHalfTransitionCount;
+		if (controller->actionDown.endedDown)
+		{
+			gameState->greenOffset += 1;
+		}
 	}
 
 	// TODO: Allow sample offsets here for more robust platform options

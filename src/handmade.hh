@@ -1,4 +1,3 @@
-#pragma once
 /* 
  * ========================================================================
  * File: handmade.hh
@@ -20,30 +19,32 @@
  * 1 - Slow code welcome.
  */
 
+#pragma once
+
 #define HANDMADE_WIN32 1
 #define HANDMADE_INTERNAL 1
 #define HANDMADE_SLOW 1
 
 #ifdef HANDMADE_SLOW
  // TODO: Complete assertion macro - don't worry everyone!
-#define Assert(condition) if (!(condition)) { *(int*)0 = 0;}
+#define ASSERT(condition) if (!(condition)) { *(int*)0 = 0;}
 #else
-#define Assert(condition)
+#define ASSERT(condition)
 #endif
 
-#define Kilobytes(value) ((value)*1024LL)
-#define Megabytes(value) (Kilobytes(value)*1024LL)
-#define Gigabytes(value) (Megabytes(value)*1024LL)
-#define Terabytes(value) (Gigabytes(value)*1024LL)
+#define KYLOBYTES(value) ((value)*1024LL)
+#define MEGABYTES(value) (KYLOBYTES(value)*1024LL)
+#define GIGABYTES(value) (MEGABYTES(value)*1024LL)
+#define TERABYTES(value) (GIGABYTES(value)*1024LL)
 
-#define ArrayCount(arr) ((sizeof (arr)) / (sizeof (arr)[0]))
+#define ARRAY_COUNT(arr) ((sizeof (arr)) / (sizeof (arr)[0]))
  // TODO: swap, min, max ... macros???
 
 inline uint32
 SafeTruncateUInt64(uint64 value)
 {
 	// TODO: Defines for maximum values
-	Assert(value <= 0xFFFFFFFF); // 0xFFFF ??
+	ASSERT(value <= 0xFFFFFFFF);
 	return uint32(value);
 }
 
@@ -54,14 +55,14 @@ SafeTruncateUInt64(uint64 value)
  * These are NOT for doing anything in the shipping game - they are
  * blocking and the write doesn't protect against lost data!
  */
-namespace DEBUG
+namespace Debug
 {
-	struct read_file_result
+	struct ReadFileResult
 	{
 		uint32 dataSize;
 		void *data;
 	};
-	read_file_result PlatformReadEntireFile(const char *filename);
+	ReadFileResult PlatformReadEntireFile(const char *filename);
 	bool32 PlatformWriteEntireFile(const char *filename, uint32 memorySize, void *memory);
 	void PlatformFreeFileMemory(void *memory);
 }
@@ -75,55 +76,55 @@ namespace DEBUG
 // FOUR THINGS - timing, controller/keyboard input, bitmap buffer to use, sound buffer to use
 
 // TODO: In the future, rendering _specifically_ will become a three-tiered abstraction!!!
-struct game_offscreen_buffer
+struct GameOffscreenBuffer
 {
-	// NOTE: Pixels are alwasy 32-bits wide, Memory Order BB GG RR XX
+	// NOTE: Pixels are always 32-bits wide, Memory Order BB GG RR XX
 	void *memory;
 	int32 width;
 	int32 height;
 	int32 pitch;
 };
 
-struct game_sound_output_buffer
+struct GameSoundOutputBuffer
 {
 	int32 samplesPerSecond;
 	int32 sampleCount;
 	int16 *samples;
 };
 
-struct game_button_state
+struct GameButtonState
 {
 	int32 halfTransitionCount;
 	bool32 endedDown;
 };
 
-struct game_controller_input
+struct GameControllerInput
 {
+	bool32 isConnected;
 	bool32 isAnalog;
-
-	real32 startX;
-	real32 startY;
-
-	real32 minX;
-	real32 minY;
-
-	real32 maxX;
-	real32 maxY;
-
-	real32 endX;
-	real32 endY;
+	real32 stickAverageX;
+	real32 stickAverageY;
 
 	union
 	{
-		game_button_state buttons[6];
+		GameButtonState buttons[12];
 		struct
 		{
-			game_button_state up;
-			game_button_state down;
-			game_button_state left;
-			game_button_state right;
-			game_button_state leftShoulder;
-			game_button_state rightShoulder;
+			GameButtonState moveUp;
+			GameButtonState moveDown;
+			GameButtonState moveLeft;
+			GameButtonState moveRight;
+
+			GameButtonState actionUp;
+			GameButtonState actionDown;
+			GameButtonState actionLeft;
+			GameButtonState actionRight;
+
+			GameButtonState leftShoulder;
+			GameButtonState rightShoulder;
+
+			GameButtonState back;
+			GameButtonState start;
 		};
 	};
 	
@@ -134,13 +135,18 @@ struct game_controller_input
 //	real32 secondsElapsed;
 //};
 
-struct game_input
+struct GameInput
 {
 	// TODO: Insert clock values here.
-	game_controller_input controllers[4];
+	GameControllerInput controllers[5];
 };
+inline GameControllerInput *GetController(GameInput *input, int controllerIndex)
+{
+	ASSERT(controllerIndex < ARRAY_COUNT(input->controllers));
+	return &input->controllers[controllerIndex];
+}
 
-struct game_memory
+struct GameMemory
 {
 	bool32 isInitialized;
 
@@ -151,12 +157,12 @@ struct game_memory
 	void *transientStorage; // NOTE: REQUIRED to be cleared to zero at startup
 };
 
-void GameUpdateAndRender(game_memory &memory,
-						 game_input &input,
-						 game_offscreen_buffer &offscreenBuffer,
-						 game_sound_output_buffer &soundBuffer);
+void GameUpdateAndRender(GameMemory *memory,
+						 GameInput *input,
+						 GameOffscreenBuffer *offscreenBuffer,
+						 GameSoundOutputBuffer *soundBuffer);
 
-struct game_state
+struct GameState
 {
 	int32 toneHz;
 	int32 greenOffset;

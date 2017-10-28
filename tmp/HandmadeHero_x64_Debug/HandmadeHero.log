@@ -1,0 +1,20 @@
+﻿  win32_handmade.cc
+c:\workspace\repos\handmadehero\src\handmade.hh(128): warning C4201: nonstandard extension used: nameless struct/union
+win32_handmade.cc(59): warning C4100: 'pState': unreferenced formal parameter
+win32_handmade.cc(59): warning C4100: 'dwUserIndex': unreferenced formal parameter
+win32_handmade.cc(66): warning C4100: 'pVibration': unreferenced formal parameter
+win32_handmade.cc(66): warning C4100: 'dwUserIndex': unreferenced formal parameter
+win32_handmade.cc(76): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(128): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(159): warning C4211: nonstandard extension used: redefined extern to static
+win32_handmade.cc(495): warning C4100: 'nShowCmd': unreferenced formal parameter
+win32_handmade.cc(494): warning C4100: 'lpCmdLine': unreferenced formal parameter
+win32_handmade.cc(493): warning C4100: 'hPrevInstance': unreferenced formal parameter
+win32_handmade.cc(526): warning C4189: 'xOffset': local variable is initialized but not referenced
+win32_handmade.cc(526): warning C4189: 'yOffset': local variable is initialized but not referenced
+win32_handmade.cc(738): warning C4189: 'msPerFrame': local variable is initialized but not referenced
+win32_handmade.cc(739): warning C4189: 'fps': local variable is initialized but not referenced
+win32_handmade.cc(740): warning C4189: 'mcpf': local variable is initialized but not referenced
+c:\workspace\repos\handmadehero\src\handmade.cc(58): warning C4505: 'GameStartUp': unreferenced local function has been removed
+c:\workspace\repos\handmadehero\src\handmade.cc(71): warning C4505: 'GameShutDown': unreferenced local function has been removed
+  HandmadeHero.vcxproj -> C:\Workspace\Repos\HandmadeHero\\bin\x64_Debug\HandmadeHero.exe
